@@ -1,37 +1,4 @@
 
-/**@type {HTMLDivElement} */
-const jsSection = document.createElement("div");
-jsSection.id = "jssection";
-jsSection.classList.add("hide");
-document.body.appendChild(jsSection);
-
-/** @type {HTMLTableElement} */
-const table = document.createElement("table");
-jsSection.appendChild(table);
-
-/** @type {HTMLTableSectionElement} */
-const thead = document.createElement("thead");
-table.appendChild(thead);
-
-/** @type {HTMLTableRowElement} */
-const headRow = document.createElement("tr");
-thead.appendChild(headRow);
-
-/** @type {string[]} */
-const headers = ["Osztály", "Manó", "Műszak"];
-
-for (const headerText of headers) {
-    /**@type {HTMLTableCellElement} */
-    const th = document.createElement("th");
-    th.innerText = headerText;
-    headRow.appendChild(th);
-}
-
-/** @type {HTMLTableSectionElement} */
-const tbody = document.createElement("tbody");
-tbody.id = "jstbody";
-table.appendChild(tbody);
-
 /**@typedef {what: string, who1: string, shift1: string, who2?: string, shift2?: string} Elf */
 
 /** @type {Elf[]} */
@@ -50,6 +17,51 @@ const elfs = [
     }
 ];
 
+/** @type {string[]} */
+const headers = ["Osztály", "Manó", "Műszak"];
+
+/**@type {HTMLDivElement} */
+const jsSection = document.createElement("div");
+jsSection.id = "jssection";
+jsSection.classList.add("hide");
+document.body.appendChild(jsSection);
+
+/** @type {HTMLTableElement} */
+const table = document.createElement("table");
+jsSection.appendChild(table);
+
+/** @type {HTMLTableSectionElement} */
+const thead = document.createElement("thead");
+table.appendChild(thead);
+
+/** @type {HTMLTableRowElement} */
+const headRow = document.createElement("tr");
+thead.appendChild(headRow);
+
+
+for (const headerText of headers) {
+    /**@type {HTMLTableCellElement} */
+    createCell("th", headerText, headRow);
+}
+
+/** @type {HTMLTableSectionElement} */
+const tbody = document.createElement("tbody");
+tbody.id = "jstbody";
+table.appendChild(tbody);
+
+/**
+ * @param {"th|td"} cellType 
+ * @param {string} cellText 
+ * @param {HTMLElement} cellParent 
+ * @returns {HTMLElement}
+ */
+function createCell(cellType, cellText, cellParent) {
+    const cell = document.createElement(cellType);
+    cell.innerText = cellText;
+    cellParent.appendChild(cell);
+    return cell;
+}
+
 /**
  * @param {Elf} array 
  * @returns {void}
@@ -61,17 +73,10 @@ function renderTbody(array) {
         const tr1 = document.createElement("tr");
         tbody.appendChild(tr1);
 
-        const tdWhat = document.createElement("td");
-        tdWhat.innerText = array[i].what;
-        tr1.appendChild(tdWhat);
+        const tdWhat = createCell("td", array[i].what, tr1);
+        createCell("td", array[i].who1, tr1);
+        createCell("td", array[i].shift1, tr1);
 
-        const tdWho1 = document.createElement("td");
-        tdWho1.innerText = array[i].who1;
-        tr1.appendChild(tdWho1);
-
-        const tdShift1 = document.createElement("td");
-        tdShift1.innerText = array[i].shift1;
-        tr1.appendChild(tdShift1);
 
         if (array[i].who2 && array[i].shift2) {
             tdWhat.rowSpan = 2;
@@ -79,13 +84,8 @@ function renderTbody(array) {
             const tr2 = document.createElement("tr");
             tbody.appendChild(tr2);
 
-            const tdWho2 = document.createElement("td");
-            tdWho2.innerText = array[i].who2;
-            tr2.appendChild(tdWho2);
-
-            const tdShift2 = document.createElement("td");
-            tdShift2.innerText = array[i].shift2;
-            tr2.appendChild(tdShift2);
+            createCell("td", array[i].who2, tr2);
+            createCell("td", array[i].shift2, tr2);
         }
     }
 }
@@ -143,16 +143,10 @@ function createSelect(id, l) {
     empty.innerText = "Válassz műszakot!";
     select.appendChild(empty);
 
-    const values = [
-        { value: "1", text: "Délelőttös" },
-        { value: "2", text: "Délutános" },
-        { value: "3", text: "Éjszakai" }
-    ];
-
-    for (let i = 0; i < values.length; i++) {
+    for (let i = 1; i <= 3; i++) {
         const o = document.createElement("option");
-        o.value = values[i].value;
-        o.innerText = values[i].text;
+        o.value = i;
+        o.innerText = mapMuszak(i);
         select.appendChild(o);
     }
 
@@ -244,6 +238,8 @@ function validate(inputfield) {
     return valid
 }
 
+
+//HTML eventListener
 const htmlForm = document.getElementById("htmlform");
 htmlForm.addEventListener("submit", handleHTMLForm);
 
@@ -272,20 +268,13 @@ function handleHTMLForm(e) {
 
         const tr = document.createElement("tr");
 
-        const td1 = document.createElement("td");
-        td1.innerText = chooser.value;
-        tr.appendChild(td1);
-
-        const td2 = document.createElement("td");
-        td2.innerText = tev1.value;
-        tr.appendChild(td2);
+        createCell("td", chooser.value, tr);
+        const td = createCell("td", tev1.value, tr);
 
         if (tev2.value) {
-            const td3 = document.createElement("td");
-            td3.innerText = tev2.value;
-            tr.appendChild(td3);
+            createCell("td", tev2.value, tr);
         } else {
-            td2.colSpan = 2;
+            td.colSpan = 2;
         }
 
         tbody.appendChild(tr);

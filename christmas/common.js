@@ -1,7 +1,6 @@
 /**
  * @typedef {{what: string, who1: string, who2?: string}} PartialElf
  */
-/**@type {PartialElf[]} */
 /**
  *  Lekérjük a tableselectort, és regisztrálunk egy change eseménykezelőt!
  */
